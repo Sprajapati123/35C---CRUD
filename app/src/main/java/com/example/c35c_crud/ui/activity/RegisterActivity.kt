@@ -9,6 +9,8 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.c35c_crud.R
 import com.example.c35c_crud.databinding.ActivityRegisterBinding
 import com.example.c35c_crud.model.UserModel
+import com.example.c35c_crud.repository.UserRepositoryImpl
+import com.example.c35c_crud.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -16,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase
 class RegisterActivity : AppCompatActivity() {
     lateinit var binding: ActivityRegisterBinding
 
-
+    lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,9 @@ class RegisterActivity : AppCompatActivity() {
 
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        auth = FirebaseAuth.getInstance()
+
+        var repo = UserRepositoryImpl()
+        userViewModel = UserViewModel(repo)
 
         binding.signUp.setOnClickListener {
 
@@ -35,41 +39,70 @@ class RegisterActivity : AppCompatActivity() {
             var address = binding.registerAddress.text.toString()
             var contact = binding.registerContact.text.toString()
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        var userId = auth.currentUser?.uid
-
-                        var userModel = UserModel(
-                            userId.toString(),
-                            firstName, lastName,
-                            address, contact,email
-                        )
-
-                        ref.child(userId.toString()).setValue(userModel).addOnCompleteListener {
-                            if(it.isSuccessful){
-                                Toast.makeText(
-                                    this@RegisterActivity,
-                                    "Register success",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }else{
-                                Toast.makeText(
-                                    this@RegisterActivity,
-                                    it.exception?.message.toString(),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+            userViewModel.signup(email,password){
+                success,message,userId ->
+                if(success){
+                    var userModel = UserModel(
+                        userId,
+                        firstName, lastName,
+                        address, contact, email
+                    )
+                    userViewModel.addUserToDatabase(userId,userModel){
+                        success,message ->
+                        if(success){
+                            Toast.makeText(
+                                this@RegisterActivity,
+                                message,Toast.LENGTH_LONG
+                            ).show()
+                        }else{
+                            Toast.makeText(
+                                this@RegisterActivity,
+                                message,Toast.LENGTH_LONG
+                            ).show()
                         }
-
-                    } else {
-                        Toast.makeText(
-                            this@RegisterActivity,
-                            it.exception?.message.toString(),
-                            Toast.LENGTH_LONG
-                        ).show()
                     }
+                }else{
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        message,Toast.LENGTH_LONG
+                    ).show()
                 }
+            }
+//            auth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener {
+//                    if (it.isSuccessful) {
+//                        var userId = auth.currentUser?.uid
+//
+//                        var userModel = UserModel(
+//                            userId.toString(),
+//                            firstName, lastName,
+//                            address, contact,email
+//                        )
+//
+//                        ref.child(userId.toString()).setValue(userModel).addOnCompleteListener {
+//                            if(it.isSuccessful){
+//                                Toast.makeText(
+//                                    this@RegisterActivity,
+//                                    "Register success",
+//                                    Toast.LENGTH_LONG
+//                                ).show()
+//                            }else{
+//                                Toast.makeText(
+//                                    this@RegisterActivity,
+//                                    it.exception?.message.toString(),
+//                                    Toast.LENGTH_LONG
+//                                ).show()
+//                            }
+//                        }
+//
+//                    } else {
+//                        Toast.makeText(
+//                            this@RegisterActivity,
+//                            it.exception?.message.toString(),
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//                    }
+//                }
 
         }
 
