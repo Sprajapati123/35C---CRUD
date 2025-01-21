@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.c35c_crud"
-    compileSdk = 34
+    compileSdk = 35
 
     buildFeatures {
         viewBinding = true
