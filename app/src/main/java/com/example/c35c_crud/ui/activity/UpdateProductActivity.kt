@@ -45,6 +45,10 @@ class UpdateProductActivity : AppCompatActivity() {
             binding.updateProductDesc.setText(it?.productDesc.toString())
         }
 
+        binding.btnUpdate.setOnClickListener {
+            val newProductName = binding.updateProductName.text.toString()
+
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
