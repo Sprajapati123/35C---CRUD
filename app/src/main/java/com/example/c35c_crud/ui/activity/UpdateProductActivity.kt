@@ -1,6 +1,7 @@
 package com.example.c35c_crud.ui.activity
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,7 +27,6 @@ class UpdateProductActivity : AppCompatActivity() {
         productViewModel = ProductViewModel(repo)
 
 
-
 //      if you need to get model passed from another activity
 //        var products : ProductModel? = intent.getParcelableExtra("products")
 //
@@ -36,10 +36,10 @@ class UpdateProductActivity : AppCompatActivity() {
 //            binding.updateProductDesc.setText(it?.productDesc.toString())
 //        }
 
-        var id : String = intent.getStringExtra("productId").toString()
+        var id: String = intent.getStringExtra("productId").toString()
         productViewModel.getProductById(id)
 
-        productViewModel.products.observe(this){
+        productViewModel.products.observe(this) {
             binding.updateProductName.setText(it?.productName.toString())
             binding.updateProductPrice.setText(it?.price.toString())
             binding.updateProductDesc.setText(it?.productDesc.toString())
@@ -47,6 +47,25 @@ class UpdateProductActivity : AppCompatActivity() {
 
         binding.btnUpdate.setOnClickListener {
             val newProductName = binding.updateProductName.text.toString()
+            val newProductPrice = binding.updateProductPrice.text.toString().toInt()
+            val newProductNDesc = binding.updateProductDesc.text.toString()
+
+            var updatedMap = mutableMapOf<String, Any>()
+
+            updatedMap["productName"] = newProductName
+            updatedMap["productDesc"] = newProductNDesc
+            updatedMap["price"] = newProductPrice
+
+            productViewModel.updateProduct(id, updatedMap) {
+                            success, message ->
+                if (success) {
+                    Toast.makeText(this@UpdateProductActivity, message, Toast.LENGTH_LONG).show()
+                    finish()
+                } else {
+                    Toast.makeText(this@UpdateProductActivity, message, Toast.LENGTH_LONG).show()
+
+                }
+            }
 
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
