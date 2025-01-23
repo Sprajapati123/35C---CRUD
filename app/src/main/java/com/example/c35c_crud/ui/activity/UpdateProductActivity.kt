@@ -59,10 +59,12 @@ class UpdateProductActivity : AppCompatActivity() {
             productViewModel.updateProduct(id, updatedMap) {
                             success, message ->
                 if (success) {
-                    Toast.makeText(this@UpdateProductActivity, message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@UpdateProductActivity,
+                        message, Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    Toast.makeText(this@UpdateProductActivity, message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@UpdateProductActivity,
+                        message, Toast.LENGTH_LONG).show()
 
                 }
             }
